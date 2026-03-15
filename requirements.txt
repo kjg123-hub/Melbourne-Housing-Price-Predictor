@@ -8,3 +8,6 @@ scikit-learn
 xgboost
 lightgbm
 jupyter
+streamlit
+joblib
+geopy
