@@ -1,3 +1,5 @@
+from unicodedata import name
+
 import streamlit as st
 import joblib
 import json
@@ -6,6 +8,7 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 import time
+import shap 
 
 # ── Config ──────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -25,6 +28,14 @@ def load_model():
     return model, features
 
 model, feature_cols = load_model()
+
+@st.cache_resource
+def load_explainer(model):
+    # get the trained model inside pipeline
+    regressor = model.named_steps["regressor"]
+    return shap.TreeExplainer(regressor)
+
+explainer = load_explainer(model)
 
 # ── Styling ───────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -175,6 +186,30 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
 
             prediction = np.expm1(model.predict(input_df)[0])
 
+            # Transform input using preprocessor
+            X_processed = model.named_steps["preprocessor"].transform(input_df)
+
+            # Get feature names AFTER preprocessing
+            feature_names = model.named_steps["preprocessor"].get_feature_names_out()
+
+            # Compute SHAP values
+            shap_values = explainer.shap_values(X_processed)
+
+            # Convert to dataframe
+            shap_df = pd.DataFrame({
+                "feature": feature_names,
+                "impact": shap_values[0]
+            })
+
+            # Sort by importance
+            shap_df["abs_impact"] = shap_df["impact"].abs()
+            shap_df = shap_df.sort_values(by="abs_impact", ascending=False).head(5)
+
+            def clean_feature_name(name):
+                return name.replace("num__", "").replace("cat__", "").replace("_", " ")
+
+            shap_df["feature"] = shap_df["feature"].apply(clean_feature_name)
+
             st.markdown(f"""
                 <div class="result-box">
                     <div style="font-size:1rem; color:#166534; margin-bottom:6px;">Estimated Sale Price</div>
@@ -184,6 +219,28 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+
+            st.markdown("### Why this price?")
+
+            for _, row in shap_df.iterrows():
+                sign = "+" if row["impact"] > 0 else "-"
+                color = "#16a34a" if row["impact"] > 0 else "#dc2626"
+
+                st.markdown(f"""
+                <div style="
+                display:flex;
+                justify-content:space-between;
+                padding:8px 12px;
+                margin-bottom:6px;
+                border-radius:6px;
+                background:#f9fafb;
+                ">
+                    <span>{sign} {row['feature']}</span>
+                    <span style="color:{color}; font-weight:600;">
+                        {sign}${abs(row['impact']):,.0f}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
 
             st.write("Input columns:", input_df.columns.tolist())
             st.write("Model expects:", model.named_steps['preprocessor'].feature_names_in_)
