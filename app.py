@@ -81,27 +81,31 @@ if address:
                 raw = location.raw.get("address", {})
                 lat = location.latitude
                 lon = location.longitude
-                suburb = (
-                    raw.get("suburb")
-                    or raw.get("city_district")
-                    or raw.get("town")
-                    or raw.get("village")
-                    or ""
-                )
+                # suburb = (
+                #     raw.get("suburb")
+                #     or raw.get("city_district")
+                #     or raw.get("town")
+                #     or raw.get("village")
+                #     or ""
+                # )
                 postcode = str(raw.get("postcode", ""))
-                council = raw.get("county", raw.get("state_district", ""))
+                # council = raw.get("county", raw.get("state_district", ""))
                 distance = round(geodesic(MELBOURNE_CBD, (lat, lon)).km, 2)
 
                 st.success(f"Found: **{suburb}**, {postcode}")
 
-                c1, c2, c3 = st.columns(3)
+                c1, c2, c3, c4 = st.columns(4)
                 c1.metric("Distance from CBD", f"{distance} km")
                 c2.metric("Latitude", round(lat, 4))
                 c3.metric("Longitude", round(lon, 4))
+                c4.metic("Postcode", postcode)
             else:
                 st.error("Address not found. Try adding suburb and state, e.g. 'Richmond VIC'.")
         except Exception as e:
             st.error(f"Geocoding error: {e}")
+
+# all we need from above geolocation is lat, lon, postcode, distance (from CBD)
+# additionally we need user input for internal area, year built, plot size, rooms 
 
 st.divider()
 
@@ -180,6 +184,9 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+
+            st.write("Input columns:", input_df.columns.tolist())
+            st.write("Model expects:", model.named_steps['preprocessor'].feature_names_in_)
 
             st.markdown("""
                 <div class="warning-box" style="margin-top:16px;">
