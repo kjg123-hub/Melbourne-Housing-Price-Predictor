@@ -98,7 +98,7 @@ if address:
                 c1.metric("Distance from CBD", f"{distance} km")
                 c2.metric("Latitude", round(lat, 4))
                 c3.metric("Longitude", round(lon, 4))
-                c4.metic("Postcode", postcode)
+                c4.metric("Postcode", postcode)
             else:
                 st.error("Address not found. Try adding suburb and state, e.g. 'Richmond VIC'.")
         except Exception as e:
@@ -116,11 +116,11 @@ st.caption("Fill in the property details below. Location fields are auto-filled 
 col1, col2 = st.columns(2)
 
 with col1:
-    prop_type = st.selectbox(
-        "Property Type",
-        options=["h", "t", "u"],
-        format_func=lambda x: {"h": "House", "t": "Townhouse", "u": "Unit"}[x]
-    )
+    # prop_type = st.selectbox(
+    #     "Property Type",
+    #     options=["h", "t", "u"],
+    #     format_func=lambda x: {"h": "House", "t": "Townhouse", "u": "Unit"}[x]
+    #)
     building_area = st.number_input("Building Area (m²)", min_value=10, max_value=1000, value=150)
     year_built = st.number_input("Year Built", min_value=1800, max_value=2025, value=1990)
     landsize = st.number_input("Land Size (m²)", min_value=0, max_value=100000, value=500)
@@ -131,21 +131,21 @@ with col2:
         min_value=1, max_value=20, value=5,
         help="Bedrooms + bathrooms + other"
     )
-    propertycount = st.number_input(
-        "Properties in Suburb (approx)",
-        min_value=1, max_value=50000, value=5000,
-        help="Rough number of properties in the suburb. Check realestate.com.au if unsure."
-    )
-    suburb_input = st.text_input(
-        "Suburb (auto-filled)",
-        value=suburb,
-        help="Auto-filled from address. Edit if incorrect."
-    )
-    council_input = st.text_input(
-        "Council Area (auto-filled)",
-        value=council,
-        help="Auto-filled from address. Edit if incorrect."
-    )
+#     propertycount = st.number_input(
+#         "Properties in Suburb (approx)",
+#         min_value=1, max_value=50000, value=5000,
+#         help="Rough number of properties in the suburb. Check realestate.com.au if unsure."
+#     )
+#     suburb_input = st.text_input(
+#         "Suburb (auto-filled)",
+#         value=suburb,
+#         help="Auto-filled from address. Edit if incorrect."
+#     )
+#     council_input = st.text_input(
+#         "Council Area (auto-filled)",
+#         value=council,
+#         help="Auto-filled from address. Edit if incorrect."
+#     )
 
 # ── Predict ───────────────────────────────────────────────────────────────────
 st.divider()
@@ -158,19 +158,19 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
     else:
         try:
             input_df = pd.DataFrame([{
-                "Suburb": suburb_input or suburb,
-                "Type": prop_type,
+                # "Suburb": suburb_input or suburb,
+                # "Type": prop_type,
                 "Distance": distance,
                 "Postcode": postcode,
                 "Landsize": landsize,
                 "BuildingArea": building_area,
                 "YearBuilt": year_built,
-                "CouncilArea": council_input or council,
+                # "CouncilArea": council_input or council,
                 "Lattitude": lat,
                 "Longtitude": lon,
-                "Propertycount": propertycount,
+                # "Propertycount": propertycount,
                 "Total_Internal_Rooms": total_rooms,
-                "Price_Category": "Medium"                  # placeholder
+                # "Price_Category": "Medium"                  # placeholder
             }])
 
             prediction = np.expm1(model.predict(input_df)[0])
