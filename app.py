@@ -160,6 +160,7 @@ with col2:
     #     value=council,
     #     help="Auto-filled from address. Edit if incorrect."
     # )
+    council_input = ""
 
 # ── Predict ───────────────────────────────────────────────────────────────────
 st.divider()
