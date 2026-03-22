@@ -41,8 +41,18 @@ explainer = load_explainer(model)
 # ── Styling ───────────────────────────────────────────────────────────────────
 
 st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        .main { max-width: 400px; margin: auto; }
+        /* ── Fonts ── */
+        html, body, [class*="css"], .stMarkdown, .stTextInput, .stSelectbox,
+        .stNumberInput, .stButton, label, p, div {
+            font-family: 'DM Sans', sans-serif !important;
+        }
+        h1, h2, h3 {
+            font-family: 'DM Serif Display', serif !important;
+        }
+
+        /* ── Result box ── */
         .result-box {
             background: #f0fdf4;
             border: 2px solid #22c55e;
@@ -52,7 +62,8 @@ st.markdown("""
             margin-top: 16px;
         }
         .result-price {
-            font-size: 2.4rem;
+            font-family: 'DM Serif Display', serif !important;
+            font-size: 2.8rem;
             font-weight: 700;
             color: #15803d;
         }
@@ -64,31 +75,55 @@ st.markdown("""
             font-size: 0.9rem;
             color: #78350f;
         }
+        .section-label {
+            font-family: 'DM Sans', sans-serif !important;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 
-# ── Header ────────────────────────────────────────────────────────────────────
+# ── Top layout: Property Details (left) | Title + Address (right) ─────────────
 
-st.title("Melbourne House Price Predictor")
-st.caption("Enter a Melbourne address and property details to get an estimated sale price.")
-st.divider()
+left_col, right_col = st.columns([1, 1], gap="large")
 
+# ── LEFT — Property Details ───────────────────────────────────────────────────
+with left_col:
+    st.markdown('<div class="section-label">Property Details</div>', unsafe_allow_html=True)
+    prop_type = st.selectbox(
+        "Property Type",
+        options=["House", "Unit/Apartment", "Townhouse"],
+    )
+    building_area = st.number_input("Building Area (m²)", min_value=10, max_value=1000, value=150)
+    landsize = st.number_input("Plot Size (m²)", min_value=0, max_value=100000, value=300)
+    total_rooms = st.number_input("Bedrooms + Bathrooms", min_value=1, max_value=20, value=5)
+    year_built = st.number_input("Year Built", min_value=1800, max_value=2025, value=1970)
+    propertycount = 5000
+    council_input = ""
 
-# ── Address Input ─────────────────────────────────────────────────────────────
+# ── RIGHT — Title + Address ───────────────────────────────────────────────────
+with right_col:
+    st.title("Melbourne House Price Predictor")
+    st.caption("Enter an address and property details to get an estimated sale price.")
 
-address = st.text_input(
-    "Property Address",
-    placeholder="e.g. 45 Collins St, Melbourne VIC 3000"
-)
+    address = st.text_input(
+        "Property Address",
+        placeholder="e.g. 45 Collins St, Melbourne VIC 3000"
+    )
 
 lat, lon, suburb, postcode, council, distance = None, None, "", "", "", None
+suburb_input = ""
 
 if address:
     with st.spinner("Looking up address..."):
         try:
             geolocator = Nominatim(user_agent="melb_house_predictor_v1")
-            time.sleep(1)                                                   # Nominatim rate limit
+            time.sleep(1)
             location = geolocator.geocode(
                 address + ", Victoria, Australia",
                 addressdetails=True
@@ -105,70 +140,24 @@ if address:
                     or raw.get("village")
                     or ""
                 )
+                suburb_input = suburb
                 postcode = str(raw.get("postcode", ""))
                 council = raw.get("county", raw.get("state_district", ""))
                 distance = round(geodesic(MELBOURNE_CBD, (lat, lon)).km, 2)
 
-                st.success(f"Found: **{suburb}**, {postcode}")
-
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("Distance from CBD", f"{distance} km")
-                c2.metric("Latitude", round(lat, 4))
-                c3.metric("Longitude", round(lon, 4))
-                c4.metric("Postcode", postcode)
+                with right_col:
+                    st.success(f"Found: **{suburb}**, {postcode}")
+                    c1, c2, c3, c4 = st.columns(4)
+                    c1.metric("CBD Distance", f"{distance} km")
+                    c2.metric("Lat", round(lat, 4))
+                    c3.metric("Lon", round(lon, 4))
+                    c4.metric("Postcode", postcode)
             else:
-                st.error("Address not found. Try adding suburb and state, e.g. 'Richmond VIC'.")
+                with right_col:
+                    st.error("Address not found. Try adding suburb and state, e.g. 'Richmond VIC'.")
         except Exception as e:
-            st.error(f"Geocoding error: {e}")
-
-# all we need from above geolocation is lat, lon, postcode, distance (from CBD)
-# additionally we need user input for internal area, year built, plot size, rooms 
-
-st.divider()
-
-
-# ── Property Details ──────────────────────────────────────────────────────────
-
-st.subheader("Property Details")
-st.caption("Fill in the property details below. Location fields are auto-filled from the address.")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    prop_type = st.selectbox(
-        "Property Type",
-        options=["House", "Unit/Apartment", "Townhouse"],
-        # format_func=lambda x: {"h": "House", "t": "Townhouse", "u": "Unit"}[x]
-    )
-    building_area = st.number_input("Building Area (m²)", min_value=10, max_value=1000, value=150)
-    landsize = st.number_input("Plot Size (m²)", min_value=0, max_value=100000, value=300)
-
-with col2:
-    total_rooms = st.number_input(
-        "Bedrooms + Bathrooms",
-        min_value=1, max_value=20, value=5,
-        # help="Bedrooms + bathrooms + other"
-    )
-    year_built = st.number_input("Year Built", min_value=1800, max_value=2025, value=1970)
-    
-    # propertycount = st.number_input(
-    #     "Properties in Suburb (approx)",
-    #     min_value=1, max_value=50000, value=5000,
-    #     help="Rough number of properties in the suburb. Check realestate.com.au if unsure."
-    # )
-    propertycount = 5000
-
-    suburb_input = st.text_input(
-        "Suburb (auto-filled)",
-        value=suburb,
-        help="Auto-filled from address. Edit if incorrect."
-    )
-    # council_input = st.text_input(
-    #     "Council Area (auto-filled)",
-    #     value=council,
-    #     help="Auto-filled from address. Edit if incorrect."
-    # )
-    council_input = ""
+            with right_col:
+                st.error(f"Geocoding error: {e}")
 
 
 # ── Predict ───────────────────────────────────────────────────────────────────
