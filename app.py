@@ -88,12 +88,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Top layout: Property Details (left) | Title + Address (right) ─────────────
+# Top layout
 
 left_col, right_col = st.columns([1, 1], gap="large")
 
-# ── LEFT — Property Details ───────────────────────────────────────────────────
-with left_col:
+# ── right — Property Details ───────────────────────────────────────────────────
+with right_col:
     st.markdown('<div class="section-label">Property Details</div>', unsafe_allow_html=True)
     prop_type = st.selectbox(
         "Property Type",
@@ -106,8 +106,8 @@ with left_col:
     propertycount = 5000
     council_input = ""
 
-# ── RIGHT — Title + Address ───────────────────────────────────────────────────
-with right_col:
+# ── left — Title + Address ───────────────────────────────────────────────────
+with left_col:
     st.title("Melbourne House Price Predictor")
     st.caption("Enter an address and property details to get an estimated sale price.")
 
