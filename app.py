@@ -142,11 +142,10 @@ with col1:
     )
     bedrooms = st.number_input("Bedrooms", min_value=0, max_value=20, value=3)
     bathrooms = st.number_input("Bathrooms", min_value=0, max_value=10, value=1)
-    landsize = st.number_input("Plot Size (m²)", min_value=0, max_value=100000, value=300)
 
 with col2:
     car_spaces = st.number_input("Car Spaces", min_value=0, max_value=20, value=1)
-
+    landsize = st.number_input("Plot Size (m²)", min_value=0, max_value=100000, value=300) 
     # propertycount = st.number_input(
     #     "Properties in Suburb (approx)",
     #     min_value=1, max_value=50000, value=5000,
