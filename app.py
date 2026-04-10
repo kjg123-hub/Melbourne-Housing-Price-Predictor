@@ -234,13 +234,13 @@ with col2:
     #     min_value=1, max_value=50000, value=5000,
     #     help="Rough number of properties in the suburb. Check realestate.com.au if unsure."
     # )
-    propertycount = SUBURB_PROPERTYCOUNT.get(suburb_input or suburb, PROPERTYCOUNT_DEFAULT)
 
     suburb_input = st.text_input(
         "Suburb (auto-filled)",
         value=suburb,
         help="Auto-filled from address. Edit if incorrect."
-    )
+    )   
+    propertycount = SUBURB_PROPERTYCOUNT.get(suburb_input or suburb, PROPERTYCOUNT_DEFAULT)
     # council_input = st.text_input(
     #     "Council Area (auto-filled)",
     #     value=council,
