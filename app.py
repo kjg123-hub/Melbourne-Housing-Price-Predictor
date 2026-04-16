@@ -254,7 +254,13 @@ with col1:
     bathrooms = st.number_input("Bathrooms", min_value=0, max_value=10, value=1)
 
 with col2:
-    car_spaces = st.number_input("Car Spaces", min_value=0, max_value=20, value=1)
+    car_spaces = st.number_input(
+    "Car Spaces", 
+    min_value=0, 
+    max_value=20, 
+    value=None,  # This allows the field to be empty
+    placeholder="Leave blank if unknown",
+)
     landsize = st.number_input("Plot Size (m²)", min_value=0, max_value=100000, value=300) 
     # propertycount = st.number_input(
     #     "Properties in Suburb (approx)",
@@ -303,7 +309,7 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
                 "Propertycount": propertycount,
                 "Bedroom2": bedrooms,
                 "Bathroom": bathrooms,
-                "Car": car_spaces,
+                "Car": np.nan if car_spaces is None else car_spaces,
             }])
 
             prediction = np.expm1(model.predict(input_df)[0])
