@@ -274,11 +274,11 @@ with col2:
         help="Auto-filled from address. Edit if incorrect."
     )   
     propertycount = SUBURB_PROPERTYCOUNT.get(suburb_input or suburb, PROPERTYCOUNT_DEFAULT)
-    council_input = st.text_input(
-        "Council Area (auto-filled if available)",
-            value=council,
-            help="Auto-filled from address. Edit if incorrect."
-        )
+    # council_input = st.text_input(
+    #     "Council Area (auto-filled if available)",
+    #         value=council,
+    #         help="Auto-filled from address. Edit if incorrect."
+    #     )
     
     # council_input = ""
 
@@ -303,7 +303,7 @@ if st.button("Predict Price", type="primary", use_container_width=True, disabled
                 "Distance": distance,
                 "Postcode": postcode,
                 "Landsize": landsize,
-                "CouncilArea": council_input or council,
+                "CouncilArea": council, # or formerly council_input,
                 "Lattitude": lat,
                 "Longtitude": lon,
                 "Propertycount": propertycount,
