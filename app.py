@@ -183,7 +183,7 @@ st.markdown("""
 st.title("Melbourne House Price Predictor")
 st.caption(
     "Enter a Melbourne address and property details to get an estimated sale price.  \n"
-    "[View Source Code on GitHub](https://github.com/kjgrochulski/Housing-Price-Predictor)"
+    "[Source Code and Model Training Pipeline on GitHub](https://github.com/kjgrochulski/Housing-Price-Predictor)"
 )
 st.divider()
 
