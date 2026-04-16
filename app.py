@@ -152,7 +152,7 @@ st.markdown("""
         button.step-down { display: none !important; }
             
         div[data-baseweb="input"] { border-radius: 6px !important; }
-            
+    
         .result-box {
             background: #f0fdf4;
             border: 2px solid #22c55e;
@@ -269,7 +269,7 @@ with col2:
     )   
     propertycount = SUBURB_PROPERTYCOUNT.get(suburb_input or suburb, PROPERTYCOUNT_DEFAULT)
     council_input = st.text_input(
-        "Council Area (auto-filled if available, enter if known)",
+        "Council Area (auto-filled if available)",
             value=council,
             help="Auto-filled from address. Edit if incorrect."
         )
