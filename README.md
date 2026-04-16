@@ -32,7 +32,7 @@ A machine learning web app that estimates residential property sale prices in Me
 
 The model was selected after benchmarking against XGBoost, Gradient Boosting, Random Forest, Extra Trees, Decision Tree, and ElasticNet. LightGBM and XGBoost performed very similarly; LightGBM was chosen for deployment.
 
-### Features Used
+### Features Used by Importance
 
 | Feature | Source | Weight |
 |---|---|---|
@@ -59,19 +59,19 @@ Location signals (latitude, longitude, distance, suburb, postcode) collectively 
 
 The dataset contains 13,580 residential property sales with 21 features. Sales in the dataset were recorded between **January 2016 and September 2017**.
 
-> **Important:** This data is approximately 8 years old. Melbourne property prices have changed significantly since 2017. Estimates produced by this app reflect market conditions at the time of training, not today's market.
+> **Important:** This data is 8 years old. Melbourne property prices have changed significantly since 2017. Estimates produced by this app reflect market conditions at the time of training, not today's market.
 
 ---
 
 ## Known Limitations
 
-**Data age.** The training data is from 2016–2017. The model has no awareness of market movements since then, that being said, when comparing to property calue in say 2018, the model exhbits a high level of accuracy.
+**Data age.** The training data is from 2016–2017. The model has no awareness of market movements since then, that being said, when comparing to property value in say 2018, the model exhibits a high level of accuracy.
 
-**Missing building area.** Building area (internal floor space) was excluded from the model because 47.5% of rows in the dataset had no value for it. Including it with median imputation offered only a marginal accuracy gain while creating unreliable behaviour for users entering different values. Instead, plot size is used as a proxy, but this is unfortunatly not a perfect substitute.
+**Missing building area.** Building area (internal floor space) was excluded from the model because 47.5% of rows in the dataset had no value for it. Including it with median imputation offered only a marginal accuracy gain while creating unreliable behaviour for users entering different values. Instead, plot size is used as a proxy, which is unfortunately not a perfect substitute.
 
 **Accuracy range.** A test MAE of ~$155,000 means predictions can realistically be off by $100,000–$250,000 on an individual property. The model performs best for typical houses and units in well-represented suburbs; it is less reliable for unusual properties (very large land, heritage homes, luxury market) and suburbs with few training examples.
 
-**Car spaces instability.** Because building area is absent from the model, car spaces carry some of its signal in a noisy way. In some suburbs, the training data shows counterintuitive price patterns by car space count, which can cause unexpected swings when this input is changed.
+**Car spaces instability.** Because building area is absent from the model, car spaces imperfectly carry some of its signal. In some suburbs, the training data shows counterintuitive price patterns by car space count, which can cause unexpected swings when this input is edited.
 
 **Suburb coverage.** The model was trained on 314 Melbourne suburbs. For addresses in suburbs not seen during training, the model falls back to ordinal encoding for unknown categories, which slightly reduces accuracy.
 
