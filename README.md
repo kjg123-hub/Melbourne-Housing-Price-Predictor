@@ -3,7 +3,7 @@
 **Live app:** (https://kjg123-hub-housing-price-predictor-app-nro78q.streamlit.app/#property-details)
 
 <p align="center">
-  <img width="500" height="365" alt="melb_app_ss1" src="https://github.com/user-attachments/assets/292a3696-d487-4ead-9989-dff2a464fd86" />
+  <img width="500" height="340" alt="melb_app_ss1" src="https://github.com/user-attachments/assets/292a3696-d487-4ead-9989-dff2a464fd86" />
 </p>
 
 A machine learning web app that estimates residential property sale prices in Melbourne, Australia. Users enter a street address and property details to get a price estimate with an explanation of the key factors driving it.
